@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LBAPN</title>
+
+<style>
+
+/* IMPORT POLICE */
+@font-face {
+    font-family: "ProductSans";
+    src: url("font/ProductSans-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* TYPOGRAPHIE & FOND */
+body {
+    font-family:"ProductSans","Inter",sans-serif;
+    margin:0; padding:0;
+    background:url('labo.jpg') no-repeat center center fixed;
+    background-size:cover;
+    color:#004080;
+    transition:0.3s;
+    position:relative;
+}
+
+body::before {
+    content:"";
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0);
+    transition:0.3s;
+    pointer-events:none;
+}
+body.dark-theme::before { background:rgba(0,0,40,0.65); }
+
+/* HEADER */
+header {
+    background:rgba(173,216,230,0.75);
+    backdrop-filter:blur(8px);
+    color:#004080;
+    padding:25px 20px;
+    text-align:center;
+    position:relative;
+    border-bottom:1px solid rgba(255,255,255,0.3);
+    box-shadow:0 4px 20px rgba(0,0,0,0.15);
+    border-radius:0 0 15px 15px;
+    transition:0.3s;
+}
+body.dark-theme header { background:rgba(0,38,77,0.9); color:#7fd3ff; }
+.institute { font-size:0.9rem; opacity:0.85; margin-top:6px; }
+
+/* CONTACT */
+.contact-header { position:absolute; right:20px; top:50%; transform:translateY(-50%); font-size:0.95rem; font-weight:600; }
+.contact-header a { color:inherit; text-decoration:none; }
+.contact-header a:hover { text-decoration:underline; }
+
+/* NAVIGATION */
+nav {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 20px;
+    width:96%; margin:20px auto;
+    border-radius:16px;
+    backdrop-filter:blur(8px);
+    box-sizing:border-box;
+    transition:0.3s;
+}
+body.light-theme nav { background:rgba(255,255,255,0.25); }
+body.dark-theme nav { background:rgba(0,38,77,0.85); }
+
+/* BOUTONS MENU */
+.menu-left a {
+    padding:12px 24px;
+    text-decoration:none;
+    border-radius:12px;
+    font-weight:600;
+    margin-right:10px;
+    transition:all 0.25s ease;
+    backdrop-filter:blur(8px);
+    position:relative;
+    overflow:hidden;
+}
+body.light-theme .menu-left a { color:#004080; background:rgba(255,255,255,0.25); }
+body.dark-theme .menu-left a { color:#7fd3ff; background:rgba(0,38,77,0.35); }
+.menu-left a.active-btn { background-color:#001f3f !important; color:#ffffff !important; box-shadow:0 6px 18px rgba(0,0,0,0.25); }
+.menu-left a:hover { box-shadow:0 6px 18px rgba(0,0,0,0.2); }
+
+/* SWITCH ON/OFF */
+.switch { position:relative; display:inline-block; width:60px; height:28px; }
+.switch input { opacity:0; width:0; height:0; }
+.slider {
+    position:absolute; cursor:pointer; inset:0; border-radius:34px;
+    background:rgba(255,255,255,0.25);
+    transition:.4s; backdrop-filter:blur(8px);
+}
+.slider:before {
+    position:absolute; content:"☀️";
+    height:22px; width:22px; left:4px; bottom:3px;
+    background:#001f3f; border-radius:50%;
+    transition:.4s; display:flex; align-items:center; justify-content:center;
+    font-size:14px; color:white;
+}
+input:checked + .slider { background:rgba(0,38,77,0.7); }
+input:checked + .slider:before { transform:translateX(32px); content:"🌙"; background:#7fd3ff; color:#001f3f; }
+
+#music-menu {
+    display:none;
+    position:absolute;
+    top:38px;
+    left:0;
+    background:rgba(0,0,0,0.85);
+    padding:10px;
+    border-radius:8px;
+    color:white;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:5px;
+    z-index:1000;
+}
+
+#volume-range { width:120px; }
+
+/* CONTENU */
+main { display:flex; justify-content:center; padding:5px 20px; position:relative; height:2000px; }
+section {
+    position:absolute; width:900px; min-height:1900px;
+    padding:40px; border-radius:10px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.15);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.35);
+    opacity:0; transform:translateY(60px);
+    pointer-events:none;
+    transition:all 0.45s ease;
+}
+body.dark-theme section { background:rgba(0,38,77,0.35); color:#e0e0e0; }
+section.active { opacity:1; transform:translateY(0); pointer-events:auto; }
+
+/* TITRES */
+section h2 { text-align:center; position:relative; margin-bottom:20px; }
+section h2::after {
+    content:""; display:block; width:90%; height:1px;
+    background:#aaa; margin:12px auto 0 auto;
+}
+
+/* FOOTER */
+footer { background:rgba(51,51,51,0.85); color:white; text-align:center; padding:10px; }
+body.dark-theme footer { background:rgba(0,38,77,0.85); }
+
+/* POPUP MODERNE GLASS */
+.popup-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.popup-box{
+    width:380px;
+    padding:35px;
+    border-radius:18px;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(12px);
+    border:1px solid rgba(255,255,255,0.35);
+    box-shadow:0 10px 35px rgba(0,0,0,0.25);
+    text-align:center;
+    color: #004080;
+}
+body.light-theme .popup-box { background: rgba(255,255,255,0.25); color: #004080; }
+body.dark-theme .popup-box { background: rgba(0,38,77,0.55); color: #7fd3ff; }
+
+.popup-box h3{ margin-top:0; font-size:22px; }
+.popup-box p{ font-size:15px; line-height:1.5; }
+
+/* BOUTON FERMER */
+.popup-box button{
+    margin-top:20px;
+    padding:10px 24px;
+    border:none; border-radius:12px;
+    background:#001f3f; color:white;
+    font-weight:600; cursor:pointer;
+    transition:all 0.25s ease;
+}
+.popup-box button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 18px rgba(0,0,0,0.25);
+}
+
+/* Animation slide */
+@keyframes slideUp { 0% { transform: translateY(100vh); opacity:1; } 100% { transform: translateY(0); opacity:1; } }
+.popup-box.slide-up { animation: slideUp 0.25s ease-out forwards; }
+@keyframes slideDown { 0% { transform: translateY(0); opacity:1; } 100% { transform: translateY(100vh); opacity:0; } }
+.popup-box.slide-down { animation: slideDown 0.25s ease-in forwards; }
+
+</style>
+</head>
+<body class="light-theme">
+
+<!-- POPUP -->
+<div class="popup-overlay" id="popup">
+  <div class="popup-box" id="popup-box">
+    <h3>/!\ Avertissement /!\</h3>
+    <p>Ce site est encore incomplet.<br><br>Il se peut que certaines anomalies soient présentes.</p>
+    <button onclick="closePopup()">Fermer</button>
+  </div>
+</div>
+
+<header>
+<h1>Laboratoire de Biologie Avancée de Paris Nord (LBAPN)</h1>
+<div class="institute">République Française — Institut de recherche biologique expérimentale</div>
+<div class="contact-header">Contact : <a href="mailto:lbapn.gouv@gmail.com">lbapn.gouv@gmail.com</a></div>
+</header>
+
+<nav>
+<div class="menu-left">
+<a href="#" onclick="showSection('accueil')">🏠︎</a>
+<a href="#" onclick="showSection('apropos')">À propos</a>
+<a href="#" onclick="showSection('actualites')">Actualités</a>
+<a href="#" onclick="showSection('archives')">Archives</a>
+</div>
+<div class="menu-right" style="display:flex; align-items:center; gap:10px;">
+  <div style="position:relative;">
+    <button id="music-btn">🎵 Musique</button>
+    <div id="music-menu">
+      <label for="volume-range">Volume :</label>
+      <input type="range" id="volume-range" min="1" max="100" value="50">
+    </div>
+  </div>
+  <label class="switch">
+    <input type="checkbox" id="theme-switch">
+    <span class="slider"></span>
+  </label>
+</div>
+</nav>
+
+<main>
+<section id="accueil" class="active">
+<h2>Accueil</h2>
+</p>
+
+<p style="text-align:center;">
+Bienvenue sur le portail officiel du Laboratoire de Biologie Avancée de Paris Nord (LBAPN). Fondé en 2026, le LBAPN est un centre de recherche scientifique dédié à l’étude des mécanismes biologiques complexes et à l’innovation biomédicale. Notre mission est de créer un pont entre recherche fondamentale et applications concrètes, afin de contribuer à la compréhension de la vie et au progrès scientifique.
+</p>
+<p style="text-align:center;">
+Le laboratoire accueille une équipe multidisciplinaire de chercheurs, techniciens et doctorants passionnés. Grâce à un environnement de travail stimulant et des infrastructures de pointe, le LBAPN encourage la créativité scientifique tout en respectant les normes éthiques les plus strictes.
+<br><br>
+
+<h3>Nos axes de recherche</h3>
+<p style="text-align:justify;">
+Le LBAPN se concentre sur plusieurs domaines majeurs : génétique avancée, biologie cellulaire, interactions moléculaires et développement de nouvelles méthodologies expérimentales. Chaque projet est conçu pour apporter des connaissances inédites et ouvrir la voie à des applications concrètes dans la médecine et la biotechnologie.
+</p>
+<p style="text-align:justify;">
+Nos recherches sont menées selon une approche intégrative, combinant observations expérimentales, modélisation informatique et analyses statistiques poussées. Cette approche permet de comprendre en profondeur les systèmes biologiques et de générer des résultats fiables et reproductibles.
+<br><br>
+
+<h3>Équipements et technologies</h3>
+<p style="text-align:justify;">
+Le LBAPN dispose d’instruments de pointe, incluant microscopes confocaux, systèmes d’imagerie haute résolution, plateformes de séquençage génomique et laboratoires de culture cellulaire avancés. Ces équipements permettent d’explorer le fonctionnement des cellules et des protéines avec une précision inégalée.
+</p>
+<p style="text-align:justify;">
+Chaque installation est régulièrement mise à jour pour intégrer les dernières avancées technologiques. L’équipe technique assure une maintenance rigoureuse et forme les chercheurs à l’utilisation optimale des outils afin d’obtenir des données de haute qualité.
+<br><br>
+
+<h3>Collaboration et formation</h3>
+<p style="text-align:justify;">
+Le LBAPN entretient des partenariats avec des institutions académiques et industrielles, tant au niveau national qu’international. Ces collaborations permettent de mener des projets conjoints, de partager les résultats et de favoriser l’innovation scientifique.
+</p>
+<p style="text-align:justify;">
+Le laboratoire accueille également des stagiaires, doctorants et chercheurs invités, offrant un environnement pédagogique et professionnel stimulant. La formation et le mentorat sont au cœur de notre démarche pour préparer la prochaine génération de scientifiques.
+<br><br>
+
+<h3>Notre vision</h3>
+<p style="text-align:justify;">
+Notre objectif est de devenir une référence internationale en biologie avancée, alliant rigueur scientifique, créativité et éthique. Chaque projet est orienté vers l’acquisition de nouvelles connaissances et la réalisation d’applications concrètes dans le domaine biomédical et technologique.
+</p>
+<p style="text-align:justify;">
+Nous aspirons à un laboratoire où chaque découverte nourrit la suivante, favorisant un cercle vertueux d’innovation et de progrès scientifique. Le LBAPN s’engage à rester à la pointe de la recherche tout en contribuant à l’avancement global des sciences de la vie.
+<br><br>
+
+<h3>Découverte des projets</h3>
+<p style="text-align:justify;">
+Nous vous invitons à naviguer à travers les différentes pages de ce portail pour découvrir en détail chacun des projets scientifiques mis en place par le Laboratoire de Biologie Avancée de Paris Nord (LBAPN). Chaque projet présenté illustre nos travaux de recherche les plus récents et les applications pratiques dans le domaine de la biologie avancée.
+</p>
+En parcourant ces pages, vous pourrez consulter les méthodologies employées, les résultats obtenus ainsi que les collaborations avec d'autres institutions de recherche nationales et internationales. Cette exploration vous permettra de mieux comprendre l'impact concret de nos recherches sur la science et sur la société.
+<br><br>
+
+<h3>Propriété et règles d’usage</h3>
+<p style="text-align:justify;">
+Ce site est la propriété exclusive du Gouvernement français et est placé sous surveillance constante afin d'assurer la sécurité et l'intégrité des informations présentées. L'ensemble des contenus, documents et données publiés sur ce site relève de la réglementation en vigueur concernant les sites officiels de l'État.
+</p>
+Chaque courriel envoyé via l'adresse indiquée en haut à droite de la page est enregistré et peut être utilisé à des fins de traçabilité et de sécurité. Toute communication inappropriée, diffamatoire ou contraire aux règles établies pourra faire l'objet de sanctions, conformément aux dispositions légales applicables aux sites gouvernementaux, incluant des amendes et/ou des poursuites judiciaires.
+</section>
+
+<section id="apropos">
+<h2>À propos</h2>
+<p style="text-align:center;">
+Bienvenue sur le portail officiel du Laboratoire de Biologie Avancée de Paris Nord (LBAPN). Fondé en 2026, le LBAPN est un centre de recherche scientifique dédié à l’étude des mécanismes biologiques complexes et à l’innovation biomédicale. Notre mission est de créer un pont entre recherche fondamentale et applications concrètes, afin de contribuer à la compréhension de la vie et au progrès scientifique.
+</p>
+<p style="text-align:center;">
+Le laboratoire accueille une équipe multidisciplinaire de chercheurs, techniciens et doctorants passionnés. Grâce à un environnement de travail stimulant et des infrastructures de pointe, le LBAPN encourage la créativité scientifique tout en respectant les normes éthiques les plus strictes.
+<br><br>
+
+<h3>Nos axes de recherche</h3>
+<p style="text-align:justify;">
+Le LBAPN se concentre sur plusieurs domaines majeurs : génétique avancée, biologie cellulaire, interactions moléculaires et développement de nouvelles méthodologies expérimentales. Chaque projet est conçu pour apporter des connaissances inédites et ouvrir la voie à des applications concrètes dans la médecine et la biotechnologie.
+</p>
+<p style="text-align:justify;">
+Nos recherches sont menées selon une approche intégrative, combinant observations expérimentales, modélisation informatique et analyses statistiques poussées. Cette approche permet de comprendre en profondeur les systèmes biologiques et de générer des résultats fiables et reproductibles.
+<br><br>
+
+<h3>Équipements et technologies</h3>
+<p style="text-align:justify;">
+Le LBAPN dispose d’instruments de pointe, incluant microscopes confocaux, systèmes d’imagerie haute résolution, plateformes de séquençage génomique et laboratoires de culture cellulaire avancés. Ces équipements permettent d’explorer le fonctionnement des cellules et des protéines avec une précision inégalée.
+</p>
+<p style="text-align:justify;">
+Chaque installation est régulièrement mise à jour pour intégrer les dernières avancées technologiques. L’équipe technique assure une maintenance rigoureuse et forme les chercheurs à l’utilisation optimale des outils afin d’obtenir des données de haute qualité.
+<br><br>
+
+<h3>Collaboration et formation</h3>
+<p style="text-align:justify;">
+Le LBAPN entretient des partenariats avec des institutions académiques et industrielles, tant au niveau national qu’international. Ces collaborations permettent de mener des projets conjoints, de partager les résultats et de favoriser l’innovation scientifique.
+</p>
+<p style="text-align:justify;">
+Le laboratoire accueille également des stagiaires, doctorants et chercheurs invités, offrant un environnement pédagogique et professionnel stimulant. La formation et le mentorat sont au cœur de notre démarche pour préparer la prochaine génération de scientifiques.
+<br><br>
+
+<h3>Notre vision</h3>
+<p style="text-align:justify;">
+Notre objectif est de devenir une référence internationale en biologie avancée, alliant rigueur scientifique, créativité et éthique. Chaque projet est orienté vers l’acquisition de nouvelles connaissances et la réalisation d’applications concrètes dans le domaine biomédical et technologique.
+</p>
+<p style="text-align:justify;">
+Nous aspirons à un laboratoire où chaque découverte nourrit la suivante, favorisant un cercle vertueux d’innovation et de progrès scientifique. Le LBAPN s’engage à rester à la pointe de la recherche tout en contribuant à l’avancement global des sciences de la vie.
+<br><br>
+
+<h3>Découverte des projets</h3>
+<p style="text-align:justify;">
+Nous vous invitons à naviguer à travers les différentes pages de ce portail pour découvrir en détail chacun des projets scientifiques mis en place par le Laboratoire de Biologie Avancée de Paris Nord (LBAPN). Chaque projet présenté illustre nos travaux de recherche les plus récents et les applications pratiques dans le domaine de la biologie avancée.
+</p>
+En parcourant ces pages, vous pourrez consulter les méthodologies employées, les résultats obtenus ainsi que les collaborations avec d'autres institutions de recherche nationales et internationales. Cette exploration vous permettra de mieux comprendre l'impact concret de nos recherches sur la science et sur la société.
+<br><br>
+
+<h3>Propriété et règles d’usage</h3>
+<p style="text-align:justify;">
+Ce site est la propriété exclusive du Gouvernement français et est placé sous surveillance constante afin d'assurer la sécurité et l'intégrité des informations présentées. L'ensemble des contenus, documents et données publiés sur ce site relève de la réglementation en vigueur concernant les sites officiels de l'État.
+</p>
+Chaque courriel envoyé via l'adresse indiquée en haut à droite de la page est enregistré et peut être utilisé à des fins de traçabilité et de sécurité. Toute communication inappropriée, diffamatoire ou contraire aux règles établies pourra faire l'objet de sanctions, conformément aux dispositions légales applicables aux sites gouvernementaux, incluant des amendes et/ou des poursuites judiciaires.
+</section>
+<section id="actualites">
+<h2>Actualités</h2>
+<p><strong>12 Mars 2026</strong><br>Mise en ligne de la première version du site.</p>
+</section>
+<section id="archives">
+<h2>Archives</h2>
+<p><strong>Février 2026</strong><br>Création des premières ressources internes.</p>
+</section>
+</main>
+
+<!-- AUDIO -->
+<audio id="background-music" loop>
+  <source id="music-source" src="create-miicreator.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="sfx-music">
+  <source src="press_tomodachilife.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="archives-music" loop>
+  <source src="glowingsnow_deltarune.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="popup-sound">
+  <source src="alert_miitomo.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="popup-close-sound">
+  <source src="decide_tomodachilife.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="switch-sound" preload="auto">
+  <source src="switchonoff_tomodachilife.mp3" type="audio/mpeg">
+</audio>
+
+<footer>© 2026 Laboratoire de biologie avancée de Paris Nord</footer>
+
+<script>
+// -------------------------------------------------------------
+// VARIABLES
+const backgroundMusic = document.getElementById("background-music");
+const musicSrc = document.getElementById("music-source");
+const musicBtn = document.getElementById("music-btn");
+const musicMenu = document.getElementById("music-menu");
+const volumeRange = document.getElementById("volume-range");
+const themeSwitch = document.getElementById("theme-switch");
+const sfxMusic = document.getElementById("sfx-music");
+const archivesMusic = document.getElementById("archives-music");
+const popupSound = document.getElementById("popup-sound");
+const popupCloseSound = document.getElementById("popup-close-sound");
+const switchSound = document.getElementById("switch-sound");
+const popup = document.getElementById("popup");
+const popupBox = document.getElementById("popup-box");
+
+// Extension pour savoir si un audio est en train de jouer
+Object.defineProperty(HTMLMediaElement.prototype,'playing',{
+  get:function(){ return !!(this.currentTime>0 && !this.paused && !this.ended && this.readyState>2);}
+});
+
+// SECTION ACTIVE + SFX
+function showSection(id){
+  const currentSection = document.querySelector("section.active");
+  const nextSection = document.getElementById(id);
+  if(currentSection === nextSection) return;
+  currentSection.classList.remove("active");
+  nextSection.classList.add("active");
+  document.querySelectorAll(".menu-left a").forEach(btn => btn.classList.remove("active-btn"));
+  const activeBtn = document.querySelector(`.menu-left a[onclick="showSection('${id}')"]`);
+  if(activeBtn) activeBtn.classList.add("active-btn");
+
+  sfxMusic.currentTime = 0;
+  sfxMusic.play().catch(()=>console.log("SFX bloqué"));
+
+  handleArchivesMusic();
+}
+
+// POPUP → fermer avec animation + relancer musique
+function closePopup(){
+  popupCloseSound.currentTime = 0;
+  popupCloseSound.play().catch(()=>console.log("Son de fermeture bloqué"));
+
+  popupBox.classList.remove("slide-up");
+  popupBox.classList.add("slide-down");
+
+  popupBox.addEventListener("animationend", function handler() {
+    popup.style.display = "none";
+    popupBox.classList.remove("slide-down");
+    popupBox.classList.add("slide-up");
+    popupBox.removeEventListener("animationend", handler);
+
+    backgroundMusic.play().catch(()=>console.log("Audio principal bloqué"));
+    handleArchivesMusic();
+  });
+}
+
+// SWITCH THEME + SON + MUSIQUE DARK MODE
+themeSwitch.addEventListener("change", () => {
+    switchSound.currentTime = 0;
+    switchSound.play().catch(() => console.log("Son switch bloqué"));
+    document.body.classList.toggle("dark-theme");
+    document.body.classList.toggle("light-theme");
+
+    if (document.body.classList.contains("dark-theme")) {
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
+        musicSrc.src = "mainmenu-miicreator.mp3";
+        backgroundMusic.load();
+        backgroundMusic.play().catch(() => console.log("Audio principal bloqué"));
+    } else {
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
+        musicSrc.src = "create-miicreator.mp3";
+        backgroundMusic.load();
+        backgroundMusic.play().catch(() => console.log("Audio principal bloqué"));
+    }
+});
+
+// MENU MUSIQUE FIABLE VERSION FINALE
+let musicMenuOpen = false;
+
+musicBtn.addEventListener("pointerdown", (event) => {
+    event.stopPropagation();
+    musicMenuOpen = !musicMenuOpen;
+    musicMenu.style.display = musicMenuOpen ? "flex" : "none";
+});
+
+// Empêche la fermeture quand on clique dans le menu (y compris le slider)
+musicMenu.addEventListener("pointerdown", (event) => {
+    event.stopPropagation();
+});
+
+// Fermer le menu si clic/pointer en dehors
+document.addEventListener("pointerdown", (event) => {
+    if (musicMenuOpen && !musicMenu.contains(event.target) && event.target !== musicBtn) {
+        musicMenu.style.display = "none";
+        musicMenuOpen = false;
+    }
+});
+
+// Slider contrôle le volume
+volumeRange.addEventListener("input", () => {
+    const volume = volumeRange.value / 100;
+    backgroundMusic.volume = volume;
+    archivesMusic.volume = volume;
+});
+
+
+// INIT → popup avec animation + son
+window.addEventListener("DOMContentLoaded", () => {
+  const initialBtn = document.querySelector(".menu-left a[onclick=\"showSection('accueil')\"]");
+  if(initialBtn) initialBtn.classList.add("active-btn");
+
+  volumeRange.value = 50;
+  backgroundMusic.volume = 0.5;
+  archivesMusic.volume = 0.5;
+  popupSound.volume = 1;
+  popupCloseSound.volume = 1;
+  switchSound.volume = 1;
+
+  popupBox.classList.add("slide-up");
+
+  popupSound.currentTime = 0;
+  popupSound.play().catch(()=>console.log("Son du popup bloqué"));
+});
+</script>
+
+</body>
+</html>
